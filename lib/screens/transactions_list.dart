@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 class TransactionsList extends StatelessWidget {
   final List<Transaction> transactions = List();
 
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Transactions'),
