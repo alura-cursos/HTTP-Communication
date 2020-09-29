@@ -1,12 +1,14 @@
+import 'package:bytebank/model/transactions.dart';
 import 'package:bytebank/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 
 import 'http/webclient.dart';
+import 'model/contact.dart';
 
 
 void main() {
   runApp(ByteBank());
-  findAll().then((transactionsReturn) => print('List of Transactions $transactionsReturn'));
+  save(Transaction(200.0,Contact(0,'Kamado Tanjiro',2000)));
 }
 
 class ByteBank extends StatelessWidget {
