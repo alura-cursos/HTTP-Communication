@@ -1,8 +1,6 @@
 import 'package:bytebank/components/centered_message.dart';
 import 'package:bytebank/components/progress.dart';
-import 'package:bytebank/http/webclient.dart';
 import 'package:bytebank/http/webclients/transactions_webclient.dart';
-import 'package:bytebank/model/contact.dart';
 import 'package:bytebank/model/transactions.dart';
 import 'package:flutter/material.dart';
 
