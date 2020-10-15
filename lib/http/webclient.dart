@@ -6,6 +6,6 @@ import 'inteceptors/logging_interceptor.dart';
 
 final Client client =
     HttpClientWithInterceptor.build(interceptors: [LoggingInterceptor()]);
-final String baseUrl = 'http://192.168.0.6:8080/transactions';
+final String baseUrl = 'http://192.168.0.35:8080/transactions';
 
 
