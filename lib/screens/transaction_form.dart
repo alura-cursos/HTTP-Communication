@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bytebank/components/response_dialog.dart';
 import 'package:bytebank/components/transaction_auth_dialog.dart';
 import 'package:bytebank/http/webclient.dart';
 import 'package:bytebank/http/webclients/transactions_webclient.dart';
@@ -86,14 +89,41 @@ class _TransactionFormState extends State<TransactionForm> {
     );
   }
 
-  void _save(
-      Transaction transactionCreated, String password, BuildContext context) async {
-    _webClient.save(transactionCreated, password).then((transaction) {
-      if (transaction != null) {
-        Navigator.pop(context);
-      }
-    }).catchError((error){
-      print('There was an Error $error');
-    });
+  void _save(Transaction transactionCreated, String password,
+      BuildContext context) async {
+    Transaction transaction = await _send(transactionCreated, password, context);
+
+    if (transaction != null) {
+      await _showSuccessfulMessage(context);
+      Navigator.pop(context);
+    }
+  }
+
+  Future _showSuccessfulMessage(BuildContext context) async {
+    await showDialog(
+        context: context,
+        builder: (contextDialog) {
+          return SuccessDialog('Successful Transaction');
+        });
+  }
+
+  Future<Transaction> _send(Transaction transactionCreated, String password, BuildContext context) async {
+    final Transaction transaction =
+        await _webClient.save(transactionCreated, password).catchError((error) {
+          _showFailureMessage(context,message: error.message);
+        }, test: (error) => error is HttpException).catchError((error){
+          _showFailureMessage(context,message: 'I could not talk to the server');
+        },test: (error) => error is TimeoutException).catchError((error){
+          _showFailureMessage(context);
+        },test: (error) => error is Exception);
+    return transaction;
+  }
+
+  void _showFailureMessage(BuildContext context,{String message = 'Unknown Error'}) {
+    showDialog(
+        context: context,
+        builder: (contextDialog) {
+          return FailureDialog(message);
+        });
   }
 }
