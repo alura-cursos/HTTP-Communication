@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bytebank/components/progress.dart';
 import 'package:bytebank/components/response_dialog.dart';
 import 'package:bytebank/components/transaction_auth_dialog.dart';
 import 'package:bytebank/http/webclient.dart';
@@ -23,6 +24,8 @@ class _TransactionFormState extends State<TransactionForm> {
   final TransactionsWebClient _webClient = TransactionsWebClient();
   final String transactionId = Uuid().v4();
 
+  bool _sending = false;
+
   @override
   Widget build(BuildContext context) {
     print('The Transacton UUID is: $transactionId');
@@ -36,6 +39,13 @@ class _TransactionFormState extends State<TransactionForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Visibility(
+                visible: _sending,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Progress(message: 'Sending...',),
+                ),
+              ),
               Text(
                 widget.contact.name,
                 style: TextStyle(
@@ -95,7 +105,6 @@ class _TransactionFormState extends State<TransactionForm> {
   void _save(Transaction transactionCreated, String password,
       BuildContext context) async {
     Transaction transaction = await _send(transactionCreated, password, context);
-
     if (transaction != null) {
       await _showSuccessfulMessage(context);
       Navigator.pop(context);
@@ -111,6 +120,9 @@ class _TransactionFormState extends State<TransactionForm> {
   }
 
   Future<Transaction> _send(Transaction transactionCreated, String password, BuildContext context) async {
+    setState(() {
+      _sending =true;
+    });
     final Transaction transaction =
         await _webClient.save(transactionCreated, password).catchError((error) {
           _showFailureMessage(context,message: error.message);
@@ -119,6 +131,9 @@ class _TransactionFormState extends State<TransactionForm> {
         },test: (error) => error is TimeoutException).catchError((error){
           _showFailureMessage(context);
         },test: (error) => error is Exception);
+    setState(() {
+      _sending = false;
+    });
     return transaction;
   }
 
